@@ -1,6 +1,5 @@
 wget
 unidecode
 pyaudio
-git+https://github.com/NVIDIA/NeMo.git@$main
 fastapi==0.63.0
 uvicorn[standard]
