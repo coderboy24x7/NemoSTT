@@ -14,4 +14,4 @@ async def recognize(ws: WebSocket):
 
 
 print('Running in the port: ' + str(6000) + '. Environment: ')
-uvicorn.run(app, host="0.0.0.0", port=80)
+uvicorn.run(app, host="0.0.0.0", port=6000)
