@@ -39,7 +39,7 @@ gSem = BoundedSemaphore(10)
 # sample rate, Hz
 SAMPLE_RATE = 16000
 
-asr_model = nemo_asr.models.EncDecCTCModelBPE.from_pretrained(model_name="stt_es_citrinet_512")
+asr_model = nemo_asr.models.EncDecCTCModelBPE.from_pretrained(model_name="stt_es_quartznet15x5")
 cfg = copy.deepcopy(asr_model._cfg)
 print(OmegaConf.to_yaml(cfg))
 
@@ -253,7 +253,7 @@ def print_output(text):
             print(' ', end='')
 
 @app.websocket("/transcribe")
-async def transcribe(ws: WebSocket):
+async def recognize(ws: WebSocket):
     text = ''
     start_time = None
     gSem_acquired = False
