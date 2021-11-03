@@ -24,9 +24,11 @@ print('Received connection from {0}'.format(conn.peer_addr))
 # While a connection exists, send all
 # received audio back to Asterisk (creates an echo)
 from scipy.io.wavfile import write
+import numpy
 while conn.connected:
   audio_data = conn.read()
   conn.write(audio_data)
-  write('test.wav', 16000, audio_data)
+
+  write('test.wav', 16000,  numpy.frombuffer(audio_data, dtype=numpy.int16))
 
 print('Connection with {0} over'.format(conn.peer_addr))
