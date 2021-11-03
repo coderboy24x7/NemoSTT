@@ -250,7 +250,7 @@ async def recognize(ws: WebSocket):
         data = await ws.receive()
         data = data['text'] if 'text' in data else data
         data = data['bytes'] if 'bytes' in data else data
-
+        print(data, 'dataaaaaaaaaaaaaaaaaaaaaaaaa')
         ratio = 16000 / 8000
         if isinstance(data, bytes):
             if not start_time:
