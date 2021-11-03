@@ -302,5 +302,5 @@ async def healthcheck(ws: WebSocket):
     })
 
 print('Running in the port: ' + str(6000) + '. Environment: ')
-uvicorn.run(app, host="0.0.0.0", port=6000, reload=True, debug=True)
+uvicorn.run(app, host="0.0.0.0", port=6000, debug=True)
 
