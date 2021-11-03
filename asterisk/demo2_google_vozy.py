@@ -10,7 +10,7 @@ nombre_cliente = socket.gethostname()
 ip_cliente=socket.gethostbyname(nombre_cliente)
 
 
-audiosocket = Audiosocket(("34.105.32.194", 1121))
+audiosocket = Audiosocket(("127.0.0.1", 1121))
 call_conn = audiosocket.listen()
 #audiosocket.prepare_output(rate=16000, channels=1)
 print('Listening for Audiosocket connections')
