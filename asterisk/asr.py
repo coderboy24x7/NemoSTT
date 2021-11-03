@@ -244,6 +244,7 @@ while call_conn.connected:
     # DeepSpecch requires that we pass it audio data as a Numpy array holding 16-bit integers.
     # Here, we form the needed type using the raw bytes object returned to us above
     np_audio_array = numpy.frombuffer(raw_bytes, dtype=numpy.int16)
+    print(np_audio_array)
     text = asr.transcribe(np_audio_array)
     write('test.wav', 16000, np_audio_array)
     print(text, end='')
