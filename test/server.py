@@ -15,13 +15,25 @@ from nemo.core.neural_types import NeuralType, AudioSignal, LengthsType
 import torch, uvicorn
 from torch.utils.data import DataLoader
 from time import time, strftime
-from fastapi import FastAPI, WebSocket, UploadFile, File
+from fastapi.middleware.cors import CORSMiddleware
+
+from fastapi import FastAPI, WebSocket
 from gevent.lock import BoundedSemaphore
 
 import samplerate as sr
 
 
 app = FastAPI()
+origins = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 gSem = BoundedSemaphore(10)
 
 # sample rate, Hz
@@ -240,7 +252,7 @@ def print_output(text):
         if empty_counter == 0:
             print(' ', end='')
 
-@app.websocket("/transcribe")
+@app.websocket("/recognize")
 async def recognize(ws: WebSocket):
     text = ''
     start_time = None
