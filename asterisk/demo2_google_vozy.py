@@ -4,7 +4,7 @@ import pyaudio
 import socket
 import time
 import ssl
-from asterisk.audiosocket import *
+from audiosocket import *
 
 nombre_cliente = socket.gethostname()
 ip_cliente=socket.gethostbyname(nombre_cliente)

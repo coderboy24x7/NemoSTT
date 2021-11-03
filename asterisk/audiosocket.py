@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from time import sleep
 
 # Audisocket connection class
-from asterisk.connection import *
+from connection import *
 
 
 
