@@ -30,9 +30,10 @@ audio = []
 while conn.connected:
   audio_data = conn.read()
   conn.write(audio_data)
-  audio.append(audio_data)
-for chunk in range(0, len(audio)):
-  # numpy.frombuffer(chunk, dtype=numpy.int16)
-  write(f'test{chunk}.wav', 16000,  numpy.frombuffer(audio[chunk], dtype=numpy.int16))
+  print(audio_data)
+  # audio.append(audio_data)
+# for chunk in range(0, len(audio)):
+#   # numpy.frombuffer(chunk, dtype=numpy.int16)
+#   write(f'test{chunk}.wav', 16000,  numpy.frombuffer(audio[chunk], dtype=numpy.int16))
 
 print('Connection with {0} over'.format(conn.peer_addr))
