@@ -235,6 +235,8 @@ audiosocket.prepare_output(rate=16000, channels=1)
 call_conn = audiosocket.listen()
 print('Audiosocket connection received from: ', call_conn.peer_addr)
 
+from scipy.io.wavfile import write
+
 while call_conn.connected:
     print('aaaaa')
     raw_bytes = call_conn.read()
@@ -243,7 +245,7 @@ while call_conn.connected:
     # Here, we form the needed type using the raw bytes object returned to us above
     np_audio_array = numpy.frombuffer(raw_bytes, dtype=numpy.int16)
     text = asr.transcribe(np_audio_array)
-
+    write('test.wav', 16000, np_audio_array)
     print(text, end='')
 # p = pa.PyAudio()
 # print('Available audio input devices:')
