@@ -52,12 +52,9 @@ async def microfono():
         while call_conn.connected:
         #while True:
             try:
-
-                                
-                #print(data)
-                content = [call_conn.read()]
-                print(audio_data for audio_data in content) 
-                await websocket.send(audio_data for audio_data in content)
+                raw_bytes = call_conn.read()
+                # np_audio_array = numpy.frombuffer(raw_bytes, dtype=numpy.int16)
+                await websocket.send(raw_bytes)
                 text = await asyncio.wait_for(websocket.recv(), timeout=5)
                 #print(text + ' ', end='')
                 if len(text):

@@ -50,7 +50,7 @@ class Audiosocket:
   # Optionally prepares audio sent by the user to
   # the specifications needed by audiosocket (16-bit, 8KHz mono LE PCM).
   # Audio sent in must be in PCM or ULAW format
-  def prepare_input(self, rate=44000, channels=2, ulaw2lin=False):
+  def prepare_input(self, rate=8000, channels=2, ulaw2lin=False):
     self.user_resample = audioop_struct(
       rate = rate,
       channels = channels,
@@ -62,7 +62,7 @@ class Audiosocket:
 
   # Optionally prepares audio sent by audiosocket to
   # the specifications of the user
-  def prepare_output(self, rate=44000, channels=1, ulaw2lin=False):
+  def prepare_output(self, rate=8000, channels=1, ulaw2lin=False):
     self.asterisk_resample = audioop_struct(
       rate = rate,
       channels = channels,
