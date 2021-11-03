@@ -252,8 +252,8 @@ def print_output(text):
         if empty_counter == 0:
             print(' ', end='')
 
-@app.websocket("/recognize")
-async def recognize(ws: WebSocket):
+@app.websocket("/transcribe")
+async def transcribe(ws: WebSocket):
     text = ''
     start_time = None
     gSem_acquired = False

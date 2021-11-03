@@ -1,21 +1,10 @@
-from fastapi import FastAPI, WebSocket
-import random
+import websockets, asyncio
 
-# Create application
-app = FastAPI(title='WebSocket Example')
-
-@app.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket):
-    print('Accepting client connection...')
-    await websocket.accept()
-    while True:
-        try:
-            # Wait for any message from the client
-            await websocket.receive_text()
-            # Send message to the client
-            resp = {'value': random.uniform(0, 1)}
-            await websocket.send_json(resp)
-        except Exception as e:
-            print('error:', e)
-            break
-    print('Bye..')
+async def Forward(message):
+        url = 'ws://34.134.13.66:6000'
+        async with websockets.connect(url) as websocket:
+                await websocket.send(message)
+def xmit_Loop(message):
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        loop.run_until_complete(Forward(message))
