@@ -25,7 +25,7 @@ stream = audio.open(format=FORMAT,
 
 async def microphone_client():
     async with websockets.connect(
-            'ws://34.72.57.30:6000/transcribe') as websocket:
+            'ws://34.72.57.30:6000/') as websocket:
 
         while True:
             data = stream.read(CHUNK)
