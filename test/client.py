@@ -35,7 +35,7 @@ stream = audio.open(format=FORMAT,
 
 async def microphone_client():
     async with websockets.connect(
-            'ws://localhost:6000/transcribe') as websocket:
+            'ws://34.134.13.66:6000/transcribe') as websocket:
         # await websocket.send(json.dumps({|
         #     "rate": RATE,
         #     "format": enums.RecognitionConfig.AudioEncoding.LINEAR16,
