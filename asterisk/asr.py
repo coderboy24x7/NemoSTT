@@ -224,7 +224,7 @@ asr = FrameASR(model_definition = {
 asr.reset()
 
 # Create a new audisocket server instance
-audiosocket = Audiosocket(('127.0.0.1', 1234))
+audiosocket = Audiosocket(("127.0.0.1", 1121))
 
 # Since the pretrained DeepSpeech model expects 16000Hz 16-bit, mono PCM audio,
 # we need to instruct our audiosocket instance to upsample the incoming
