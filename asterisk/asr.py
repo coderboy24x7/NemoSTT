@@ -236,12 +236,14 @@ call_conn = audiosocket.listen()
 print('Audiosocket connection received from: ', call_conn.peer_addr)
 
 while call_conn.connected:
+    print('aaaaa')
     raw_bytes = call_conn.read()
 
     # DeepSpecch requires that we pass it audio data as a Numpy array holding 16-bit integers.
     # Here, we form the needed type using the raw bytes object returned to us above
     np_audio_array = numpy.frombuffer(raw_bytes, dtype=numpy.int16)
     text = asr.transcribe(np_audio_array)
+
     print(text, end='')
 # p = pa.PyAudio()
 # print('Available audio input devices:')
