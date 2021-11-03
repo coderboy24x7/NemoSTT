@@ -1,9 +1,21 @@
-from lomond import WebSocket, events
+import time, logging
+from datetime import datetime
+import threading, collections, queue, os, os.path
 import wave
 import pyaudio
 import webrtcvad
 from lomond import WebSocket, events
 from halo import Halo
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=30,
+                    format="%(asctime)s.%(msecs)03d: %(name)s: %(levelname)s: %(funcName)s(): %(message)s",
+                    datefmt="%Y-%m-%d %p %I:%M:%S",
+                    )
+logging.getLogger('lomond').setLevel(30)
+
+
+###############################################################################################################################################################
 
 class Audio(object):
     """Streams raw audio from microphone. Data is received in a separate thread, and stored in a buffer, to be read from."""
@@ -17,6 +29,7 @@ class Audio(object):
         def proxy_callback(in_data, frame_count, time_info, status):
             callback(in_data)
             return (None, pyaudio.paContinue)
+
         if callback is None: callback = lambda in_data: self.buffer_queue.put(in_data, block=False)
         self.sample_rate = self.RATE
         self.flush_queue = flush_queue
@@ -140,35 +153,57 @@ class VADAudio(Audio):
                     yield None
                     ring_buffer.clear()
 
-def audio_consumer(vad_audio, websocket):
+    @classmethod
+    def test_vad(cls, aggressiveness):
+        self = cls(aggressiveness=aggressiveness)
+        blocks = iter(self)
+        for block in blocks:
+            is_speech = self.vad.is_speech(block, self.sample_rate)
+            print('|' if is_speech else '.', end='', flush=True)
+
+
+###############################################################################################################################################################
+
+ready = False
+
+
+def print_output(*args):
+    if logger.isEnabledFor(40):
+        print(*args)
+
+
+def audio_consumer(Audio, websocket):
     """blocks"""
     spinner = None
-    if not ARGS.nospinner: spinner = Halo(spinner='line') # circleHalves point arc boxBounce2 bounce line
+    if not ARGS.nospinner: spinner = Halo(spinner='line')  # circleHalves point arc boxBounce2 bounce line
     length_ms = 0
     wav_data = bytearray()
 
-    for block in vad_audio.vad_collector():
-        if ready and websocket.is_active:
-            if block is not None:
-                if not length_ms:
-                    logging.debug("begin utterence")
-                # if spinner: spinner.start()
-                logging.log(5, "sending block")
-                websocket.send_binary(block)
-                if ARGS.savewav: wav_data.extend(block)
-                length_ms += vad_audio.block_duration_ms
 
-            else:
-                # if spinner: spinner.stop()
-                if not length_ms: raise RuntimeError("ended utterence without beginning")
-                logging.debug("end utterence")
-                if ARGS.savewav:
-                    vad_audio.write_wav(os.path.join(ARGS.savewav, datetime.now().strftime("savewav_%Y-%m-%d_%H-%M-%S_%f.wav")), wav_data)
-                    wav_data = bytearray()
-                logging.info("sent audio length_ms: %d" % length_ms)
-                logging.log(5, "sending EOS")
-                websocket.send_text('EOS')
-                length_ms = 0
+    # for block in Audio().block_size:
+    if ready and websocket.is_active:
+        # if block is not None:
+        if not length_ms:
+            logging.debug("begin utterence")
+        # if spinner: spinner.start()
+        logging.log(5, "sending block")
+        websocket.send_binary(Audio.__iter__(Audio.block_size))
+        # if ARGS.savewav: wav_data.extend(block)
+        # length_ms += vad_audio.block_duration_ms
+
+    else:
+        # if spinner: spinner.stop()
+        if not length_ms: raise RuntimeError("ended utterence without beginning")
+        logging.debug("end utterence")
+        # if ARGS.savewav:
+        #     vad_audio.write_wav(
+        #         os.path.join(ARGS.savewav, datetime.now().strftime("savewav_%Y-%m-%d_%H-%M-%S_%f.wav")),
+        #         wav_data)
+        #     wav_data = bytearray()
+        logging.info("sent audio length_ms: %d" % length_ms)
+        logging.log(5, "sending EOS")
+        websocket.send_text('EOS')
+        length_ms = 0
 
 
 def websocket_runner(websocket):
@@ -178,23 +213,74 @@ def websocket_runner(websocket):
         if isinstance(event, events.Ready):
             global ready
             if not ready:
-                print("Connected!")
+                print_output("Connected!")
             ready = True
         elif isinstance(event, events.Text):
-            if 1: print(event.text)
+            if 1: print_output(event.text)
         elif 1:
-            # logging.debug(event)
-            print('aaaa')
+            logging.debug(event)
 
     for event in websocket:
         try:
             on_event(event)
         except:
-            print('error handling %r', event)
+            logger.exception('error handling %r', event)
             websocket.close()
 
-websocket = WebSocket('ws://35.184.187.206:8891/transcribe')
-# TODO: compress?
-print("Connecting to '%s'..." % websocket.url)
 
-websocket_runner(websocket)
+def main():
+    websocket = WebSocket(ARGS.server)
+    # TODO: compress?
+    print_output("Connecting to '%s'..." % websocket.url)
+
+    vad_audio = VADAudio(aggressiveness=ARGS.aggressiveness)
+    print_output("Listening (ctrl-C to exit)...")
+    audio_consumer_thread = threading.Thread(target=lambda: audio_consumer(Audio, websocket))
+    audio_consumer_thread.start()
+
+    websocket_runner(websocket)
+
+
+###############################################################################################################################################################
+
+def main_test():
+    if 0:
+        def consumer(self, blocks):
+            length_ms = 0
+            for block in blocks:
+                if block is not None:
+                    print('|', end='', flush=True)
+                    length_ms += self.block_duration_ms
+                else:
+                    print('.', end='', flush=True)
+                    length_ms = 0
+
+        VADAudio(consumer)
+    elif 1:
+        VADAudio.test_vad(3)
+
+
+if __name__ == '__main__':
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="Streams raw audio data from microphone with VAD to server via WebSocket")
+    parser.add_argument('-s', '--server', default='ws://localhost:6000/transcribe',
+                        help="Default: ws://35.184.187.206:8891/recognize")
+    parser.add_argument('-a', '--aggressiveness', type=int, default=3,
+                        help="Set aggressiveness of VAD: an integer between 0 and 3, 0 being the least aggressive about filtering out non-speech, 3 the most aggressive. Default: 3")
+    parser.add_argument('--nospinner', action='store_true',
+                        help="Disable spinner")
+    parser.add_argument('-w', '--savewav',
+                        help="Save .wav files of utterences to given directory. Example for current directory: -w .")
+    parser.add_argument('-v', '--verbose', action='store_true',
+                        help="Print debugging info")
+    ARGS = parser.parse_args()
+
+    if ARGS.verbose: logging.getLogger().setLevel(10)
+    if ARGS.savewav: os.makedirs(ARGS.savewav, exist_ok=True)
+
+    if 0:
+        main_test()
+    else:
+        main()
