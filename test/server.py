@@ -27,7 +27,7 @@ gSem = BoundedSemaphore(10)
 # sample rate, Hz
 SAMPLE_RATE = 16000
 
-asr_model = nemo_asr.models.EncDecCTCModel.from_pretrained('stt_es_quartznet15x5')
+asr_model = nemo_asr.models.EncDecCTCModelBPE.from_pretrained(model_name="stt_es_citrinet_512")
 cfg = copy.deepcopy(asr_model._cfg)
 print(OmegaConf.to_yaml(cfg))
 
