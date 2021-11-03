@@ -1,3 +1,5 @@
+gevent
+samplerate
 wget
 unidecode
 fastapi==0.63.0
