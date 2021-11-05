@@ -5,5 +5,9 @@ import pytorch_lightning as pl
 metadata = open('/home/csanta/lili-asr/dataset/jsons/dev_trans.json')
 quartznet = nemo_asr.models.EncDecCTCModel.from_pretrained(model_name="stt_es_quartznet15x5")
 for line in metadata:
-        print(json.loads(line))
-                        # print(quartznet.transcribe(paths2audio_files=[os.path.join(root, file)]))
+        json_load = json.loads(line)
+        filename = json_load['audio_filepath'].split('/')[-1]
+        text = json_load['text']
+        inference = quartznet.transcribe(paths2audio_files=[os.path.join('/home/csanta/lili-asr/dataset/jsons/test/', filename)])
+        error = wer(text, inference)
+        print(error)
