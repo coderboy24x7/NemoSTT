@@ -4,7 +4,7 @@ import nemo.collections.asr as nemo_asr
 import pytorch_lightning as pl
 metadata = open('/home/csanta/lili-asr/dataset/jsons/dev_trans.json')
 # quartznet = nemo_asr.models.EncDecCTCModel.from_pretrained(model_name="stt_es_quartznet15x5")
-print(len(metadata))
+print(len(metadata.read()))
 # for line in metadata:
 #         json_load = json.loads(line)
 #         filename = json_load['audio_filepath'].split('/')[-1]
