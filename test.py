@@ -8,6 +8,6 @@ for line in metadata:
         json_load = json.loads(line)
         filename = json_load['audio_filepath'].split('/')[-1]
         text = json_load['text']
-        inference = quartznet.transcribe(paths2audio_files=[os.path.join('/home/csanta/lili-asr/dataset/jsons/test/', filename)])
+        inference = quartznet.transcribe(paths2audio_files=[os.path.join('/home/csanta/lili-asr/dataset/test/', filename)])
         error = wer(text, inference)
         print(error)
