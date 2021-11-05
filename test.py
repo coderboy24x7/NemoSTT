@@ -1,8 +1,9 @@
-import os, copy, torch
+import os, copy, torch, json
+from jiwer import wer
 import nemo.collections.asr as nemo_asr
 import pytorch_lightning as pl
-for root, dirs, files in os.walk("/home/csanta/lili-asr/dataset/test/"):
-        for file in files:
-                if file.endswith('.wav'):
-                        quartznet = nemo_asr.models.EncDecCTCModel.from_pretrained(model_name="stt_es_quartznet15x5")
-                        print(quartznet.transcribe(paths2audio_files=[os.path.join(root, file)]))
+metadata = open('/home/csanta/lili-asr/dataset/jsons/dev_trans.json')
+quartznet = nemo_asr.models.EncDecCTCModel.from_pretrained(model_name="stt_es_quartznet15x5")
+for line in metadata:
+        print(json.dumps(line))
+                        # print(quartznet.transcribe(paths2audio_files=[os.path.join(root, file)]))
