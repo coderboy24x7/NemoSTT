@@ -5,7 +5,7 @@ import pytorch_lightning as pl
 cont = 0
 cont1 = 1
 metadata = open('/home/csanta/lili-asr/dataset/dev_trans.json')
-quartznet = nemo_asr.models.EncDecCTCModel.from_pretrained(model_name="stt_es_quartznet15x5")
+quartznet = nemo_asr.models.EncDecCTCModelBPE.from_pretrained(model_name="stt_es_citrinet_512")
 for line in metadata:
         cont1 = cont1 + 1
         json_load = json.loads(line)
